@@ -1,7 +1,7 @@
 {
   "name": "felex-meet-desktop",
   "productName": "FELEX Meet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "FELEX Meet desktop app: video meetings for small businesses (meet.felexuss.com)",
   "main": "src/main.js",
   "author": "FELEX Universal Services LLC",
