@@ -1,0 +1,46 @@
+{
+  "name": "felex-meet-desktop",
+  "productName": "FELEX Meet",
+  "version": "1.0.0",
+  "description": "FELEX Meet desktop app: video meetings for small businesses (meet.felexuss.com)",
+  "main": "src/main.js",
+  "author": "FELEX Universal Services LLC",
+  "license": "UNLICENSED",
+  "private": true,
+  "homepage": "https://meet.felexuss.com",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win --publish never",
+    "release:win": "electron-builder --win --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.felexuss.meet",
+    "productName": "FELEX Meet",
+    "copyright": "FELEX Universal Services LLC",
+    "directories": { "output": "release", "buildResources": "build" },
+    "files": ["src/**/*", "package.json"],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.png",
+      "artifactName": "FELEX-Meet-Setup.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "FELEX Meet"
+    },
+    "publish": [
+      { "provider": "github", "owner": "alkamara-dev", "repo": "felex-meet-desktop", "releaseType": "release" }
+    ]
+  }
+}
