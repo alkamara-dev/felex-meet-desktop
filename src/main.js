@@ -8,6 +8,10 @@ const { setupScreenShare } = require('./screenShare');
 const APP_ORIGIN = 'https://meet.felexuss.com';
 const START_URL = `${APP_ORIGIN}/app`;
 
+// Installed from the Microsoft Store (an MSIX/AppX package)? Then the Store signs it, updates it and gives it its taskbar identity, so
+// the updater and the app ID below must stay out of the way. Electron sets process.windowsStore in that case.
+const FROM_STORE = !!process.windowsStore;
+
 let mainWindow;
 
 function isAppOrigin(url) {
@@ -82,8 +86,7 @@ function buildMenu() {
           { label: 'Team', click: go('/app/team') },
           { label: 'Account', click: go('/app/account') },
           { type: 'separator' },
-          { label: 'Check for updates', click: () => autoUpdater.checkForUpdatesAndNotify() },
-          { type: 'separator' },
+          ...(FROM_STORE ? [] : [{ label: 'Check for updates', click: () => autoUpdater.checkForUpdatesAndNotify() }, { type: 'separator' }]),
           { role: 'quit' },
         ],
       },
@@ -116,13 +119,13 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(() => {
-    app.setAppUserModelId('com.felexuss.meet');
+    if (!FROM_STORE) app.setAppUserModelId('com.felexuss.meet');
     setupPermissions();
     buildMenu();
     createWindow();
     // New versions are published as GitHub releases; they download in the background
     // and install the next time the app is closed.
-    if (app.isPackaged) autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+    if (app.isPackaged && !FROM_STORE) autoUpdater.checkForUpdatesAndNotify().catch(() => {});
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

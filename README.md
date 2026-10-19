@@ -35,3 +35,7 @@ npm install
 npm start          # runs against https://meet.felexuss.com
 npm run dist:win   # local installer in release/ (no upload)
 ```
+
+## Microsoft Store
+
+The direct installer is not code-signed, so Windows shows a warning the first time. The Microsoft Store version is signed by Microsoft and installs with no warning; the build setup, listing text and the step-by-step guide are in [`store/`](store/README.md).

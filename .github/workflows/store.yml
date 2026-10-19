@@ -1,0 +1,40 @@
+# Builds the Microsoft Store package (.appx) for FELEX Meet. Run it by hand: GitHub > Actions > "Store package" > Run workflow.
+# It does NOT publish anything: it makes a file you upload in Partner Center (see store/README.md). The Microsoft Store signs the
+# package itself, so no certificate is needed here. The normal installer release (release.yml) is separate and unchanged.
+name: Store package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  appx:
+    runs-on: windows-latest
+    env:
+      # Set these three once as repository VARIABLES (Settings > Secrets and variables > Actions > Variables), copied exactly from
+      # Partner Center > your app > Product management > Product identity. They are identifiers, not secrets.
+      STORE_IDENTITY_NAME: ${{ vars.STORE_IDENTITY_NAME }}
+      STORE_PUBLISHER: ${{ vars.STORE_PUBLISHER }}
+      STORE_PUBLISHER_DISPLAY_NAME: ${{ vars.STORE_PUBLISHER_DISPLAY_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: The Store identity must be set
+        shell: bash
+        run: |
+          for v in STORE_IDENTITY_NAME STORE_PUBLISHER STORE_PUBLISHER_DISPLAY_NAME; do
+            [ -n "${!v}" ] || { echo "Repository variable $v is not set. Copy it from Partner Center > Product management > Product identity (see store/README.md)."; exit 1; }
+          done
+      - run: npm ci
+      - name: Build the Store package
+        run: npx electron-builder --win appx --config store/electron-builder.store.json --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FELEX-Meet-Store-package
+          path: release-store/*.appx
+          if-no-files-found: error
